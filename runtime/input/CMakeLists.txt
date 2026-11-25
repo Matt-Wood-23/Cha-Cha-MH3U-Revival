@@ -8,6 +8,6 @@ add_executable(bindings_test bindings_test.cpp)
 target_link_libraries(bindings_test PRIVATE mh3u_input SDL3::SDL3)
 if(WIN32)
   add_custom_command(TARGET bindings_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$ENV{VULKAN_SDK}/Bin/SDL3.dll" $<TARGET_FILE_DIR:bindings_test>)
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:SDL3::SDL3-shared>" $<TARGET_FILE_DIR:bindings_test>)
 endif()
 add_test(NAME input_bindings COMMAND bindings_test)

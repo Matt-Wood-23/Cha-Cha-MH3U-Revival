@@ -34,9 +34,9 @@ endif()
 target_link_libraries(mh3u PRIVATE mh3u_recomp_game mh3u_recomp_core mh3u_os mh3u_gfx mh3u_audio mh3u_core mh3u_fs mh3u_latte mh3u_game_src SDL3::SDL3)
 if(WIN32)
   target_link_libraries(mh3u PRIVATE shell32 ole32)
-  # SDL3.dll from the Vulkan SDK next to the executable
+  # SDL3.dll (the Vulkan SDK's, or the one SDL3_DIR points at) next to the executable
   add_custom_command(TARGET mh3u POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$ENV{VULKAN_SDK}/Bin/SDL3.dll" $<TARGET_FILE_DIR:mh3u>)
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:SDL3::SDL3-shared>" $<TARGET_FILE_DIR:mh3u>)
 else()
   target_link_libraries(mh3u PRIVATE ${CMAKE_DL_LIBS})
 endif()
