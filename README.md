@@ -27,6 +27,45 @@
 
 ---
 
+## This fork: online play on MH3U Revival servers
+
+This is Cha-Cha with the game's **Network Mode** working on [MH3U Revival](https://github.com/Matt-Wood-23/mh3u-revival)
+servers, the community NEX server that Cemu and Wii U players already hunt on. Cha-Cha keeps the game's own online
+client and points it at the server, so you share Gathering Halls, rooms, chat and hunts with those players.
+
+**Set up (Windows):**
+
+1. In Cha-Cha's data folder (`%APPDATA%\Cha-Cha`, or `data\` next to `Cha-Cha.exe` with `portable.txt`), create
+   `mh3u_server.txt` holding the server's address:
+   `host` or `host:port` (port 1223 when left out). The official server's address is the `host` in mh3u-revival's
+   [`servers.json`](https://github.com/Matt-Wood-23/mh3u-revival/blob/main/servers.json); a friend's server is the
+   address its host gives you.
+2. Start Cha-Cha and choose **Network Mode**.
+
+On first use Cha-Cha writes `mh3u_account.txt` next to it: your random player ID on Revival servers. Keep the file to
+stay the same player. Without `mh3u_server.txt`, Cha-Cha stays offline as before.
+
+**Tested:** login, Gathering Halls, the NAT check, creating and joining rooms, chat, a hunt, leaving rooms. Cha-Cha has
+hosted Cemu players and joined their rooms, on the official server and on a local one.
+
+**Limits:** Windows only for now (the sockets use Winsock; other systems stay offline). The friend list is empty, and
+voice chat has no microphone. Not yet tested between two different home networks.
+
+**What changed** (all in `runtime/os/`):
+
+- `online.cpp`: real sockets for `nsysnet` on Winsock; `nn_ac` connected; `nn_act` with a player ID and the NEX token
+  for the server; `nn_fp` logged in with no friends. The NAT-check servers are looked up as the server itself.
+- `coreinit_time.cpp`: `OSReport` turned a game's `%lld` into `%lllld`, a format the Microsoft C runtime ends the
+  process over. Voice chat logs one as a room opens, so every room crashed.
+- A receive blocked on a socket now ends when another thread shuts that socket down, as on the console. Leaving a
+  room waits for exactly that, and hung on Windows.
+- `coreinit.__ghs_flock_ptr` (called during the NEX login), and `crash_report.cpp`: fatal errors the existing handler
+  doesn't catch (fast fails, stack overflow, uncaught exceptions) print their code and a backtrace.
+
+The rest of this README is upstream Cha-Cha's.
+
+---
+
 Cha-Cha translates the game's PowerPC code into C++ ahead of time and compiles it for your PC. It runs on our own
 reimplementation of the Wii U system libraries it uses, with graphics on Vulkan and input and audio on SDL3. It is
 not an emulator, and there is no emulator code in it.
