@@ -1,5 +1,6 @@
 Cha-Cha {VERSION} for Windows x64
 A native PC port of Monster Hunter 3 Ultimate (Wii U), by static recompilation.
+This build plays online on MH3U Revival servers (see Online play below).
 
 1. Extract the whole folder somewhere you can write to (not Program Files).
 2. Put your dump of Monster Hunter 3 Ultimate (US) with update v32 in a folder
@@ -24,6 +25,14 @@ quests and mods. F3 cycles the GamePad screen view, F11 switches fullscreen.
 
 Controls: keyboard + mouse or any controller SDL supports (played as a Wii U Pro
 Controller). Key bindings: input.ini in the data folder (see input.example.ini).
+
+Online play: choose Network Mode in game. You join the MH3U Revival server named
+in data\mh3u_server.txt, set to the official server. Cemu and Wii U players
+use the same servers. For a friend's server, put its address in that file
+(host or host:port). On first use Cha-Cha writes data\mh3u_account.txt, your
+player ID on Revival servers: keep it to stay the same player. In chat, type
+on the PC keyboard (the text shows in the window title), Enter sends.
+More: https://github.com/Matt-Wood-23/mh3u-revival
 
 Requirements: Windows 10/11 x64 and a Vulkan 1.2 graphics driver. SDL3 and the
 Microsoft Visual C++ runtime DLLs are included.

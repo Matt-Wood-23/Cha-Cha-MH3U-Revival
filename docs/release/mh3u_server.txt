@@ -1,0 +1,4 @@
+# MH3U Revival server for Network Mode: host or host:port (port 1223 when left out).
+# The official server is below; for a friend's server, put its address there instead.
+# Server list: https://github.com/Matt-Wood-23/mh3u-revival/blob/main/servers.json
+163.192.124.47

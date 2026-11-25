@@ -11,6 +11,7 @@ param(
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $bin = Join-Path $root "$BuildDir\runtime\boot\Release"
+if (-not (Test-Path $bin)) { $bin = Join-Path $root "$BuildDir\runtime\boot" }  # single-config generators (Ninja)
 $exe = Join-Path $bin "Cha-Cha.exe"
 if (-not (Test-Path $exe)) { throw "No Release build at $exe - build it first: cmake --build $BuildDir --config Release --target mh3u" }
 
@@ -27,7 +28,8 @@ New-Item -ItemType Directory -Force (Join-Path $stage "licenses") | Out-Null
 Copy-Item $exe $stage
 Copy-Item (Join-Path $bin "SDL3.dll") $stage
 # Visual C++ runtime (redistributable), newest toolset in the installed Visual Studio
-$vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+#   (-products *: Build Tools count too, so the runtime matches the toolset that built Cha-Cha.exe)
+$vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath
 $crt = Get-ChildItem (Join-Path $vs "VC\Redist\MSVC") -Directory | Sort-Object Name -Descending |
     ForEach-Object { Get-ChildItem (Join-Path $_.FullName "x64") -Directory -Filter "Microsoft.VC*.CRT" -ErrorAction SilentlyContinue } |
     Select-Object -First 1
@@ -42,6 +44,9 @@ This file makes Cha-Cha portable: it keeps its settings, saves and caches in the
 Delete it to use %APPDATA%\Cha-Cha instead.
 "@
 Copy-Item (Join-Path $root "input.example.ini") $stage
+# online play: the MH3U Revival server Network Mode joins (runtime/os/online.cpp reads data\mh3u_server.txt)
+New-Item -ItemType Directory -Force (Join-Path $stage "data") | Out-Null
+Copy-Item (Join-Path $root "docs\release\mh3u_server.txt") (Join-Path $stage "data")
 Copy-Item (Join-Path $root "LICENSE") (Join-Path $stage "LICENSE.txt")  # Cha-Cha: GPL-3.0
 Copy-Item (Join-Path $root "docs\release\THIRD_PARTY_NOTICES.md") (Join-Path $stage "licenses")
 Copy-Item (Join-Path $root "$BuildDir\_deps\zstd-src\LICENSE") (Join-Path $stage "licenses\zstd-LICENSE.txt")

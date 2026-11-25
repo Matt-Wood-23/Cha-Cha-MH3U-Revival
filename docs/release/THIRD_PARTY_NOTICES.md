@@ -15,7 +15,7 @@ Shaders and pipeline caches are generated on your PC from your copy and stay in 
 
 | Library | License | Source |
 |---|---|---|
-| `SDL3.dll` (3.4, from the Vulkan SDK) | zlib | <https://github.com/libsdl-org/SDL> |
+| `SDL3.dll` (3.4, from the Vulkan SDK or an SDL release) | zlib | <https://github.com/libsdl-org/SDL> |
 | `msvcp140.dll`, `vcruntime140.dll`, `vcruntime140_1.dll` | Microsoft Visual C++ Redistributable license | Visual Studio |
 
 The Vulkan loader (`vulkan-1.dll`) comes with your graphics driver.
