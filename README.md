@@ -33,17 +33,17 @@ This is Cha-Cha with the game's **Network Mode** working on [MH3U Revival](https
 servers, the community NEX server that Cemu and Wii U players already hunt on. Cha-Cha keeps the game's own online
 client and points it at the server, so you share Gathering Halls, rooms, chat and hunts with those players.
 
-**Set up (Windows):**
+**Get it (Windows):** download the zip from [Releases](../../releases/latest), extract it, add your dump (US, update
+v32) as described in its README.txt, and choose **Network Mode** in game. The zip is set up for the official server.
 
-1. In Cha-Cha's data folder (`%APPDATA%\Cha-Cha`, or `data\` next to `Cha-Cha.exe` with `portable.txt`), create
-   `mh3u_server.txt` holding the server's address:
-   `host` or `host:port` (port 1223 when left out). The official server's address is the `host` in mh3u-revival's
-   [`servers.json`](https://github.com/Matt-Wood-23/mh3u-revival/blob/main/servers.json); a friend's server is the
-   address its host gives you.
-2. Start Cha-Cha and choose **Network Mode**.
+**Another server:** the server is named in `mh3u_server.txt` in Cha-Cha's data folder (`data\` next to `Cha-Cha.exe`
+in the portable zip, otherwise `%APPDATA%\Cha-Cha`): `host` or `host:port` (port 1223 when left out). The official
+server's address is the `host` in mh3u-revival's
+[`servers.json`](https://github.com/Matt-Wood-23/mh3u-revival/blob/main/servers.json); a friend's server is the
+address its host gives you. Without the file, Cha-Cha stays offline as before.
 
 On first use Cha-Cha writes `mh3u_account.txt` next to it: your random player ID on Revival servers. Keep the file to
-stay the same player. Without `mh3u_server.txt`, Cha-Cha stays offline as before.
+stay the same player.
 
 **Tested:** login, Gathering Halls, the NAT check, creating and joining rooms, chat, a hunt, leaving rooms. Cha-Cha has
 hosted Cemu players and joined their rooms, on the official server and on a local one.
