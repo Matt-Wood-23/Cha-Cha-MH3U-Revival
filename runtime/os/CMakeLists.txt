@@ -16,11 +16,16 @@ add_library(mh3u_os STATIC
   coreinit_dynload.cpp
   applets.cpp
   offline.cpp
+  online.cpp
+  crash_report.cpp
   coreinit_misc.cpp
   h264.cpp
 )
 target_include_directories(mh3u_os PUBLIC .)
 target_link_libraries(mh3u_os PUBLIC mh3u_core mh3u_fs mh3u_ppc_context mh3u_recomp_support mh3u_input)
+if(WIN32)
+  target_link_libraries(mh3u_os PRIVATE ws2_32)  # online.cpp: sockets
+endif()
 if(WIN32)  # H.264: Media Foundation
   target_link_libraries(mh3u_os PRIVATE mfplat mfuuid wmcodecdspuuid ole32 oleaut32 strmiids)
 elseif(ANDROID)  # FFmpeg's libavcodec, static (scripts/android/build-ffmpeg.sh)

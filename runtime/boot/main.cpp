@@ -493,6 +493,7 @@ int main(int argc, char** argv) {
     os::register_coreinit_dynload(r);
     os::register_applets(r);
     os::register_offline(r);
+    os::install_crash_report();
     // The DLC screen, served by Cha-Cha (runtime/os/dlc_server.cpp + dlc_content.cpp): main menu > DLC is the add-on
     // menu (Official = <data>/bonus, Quests = <data>/custom, Mods). MH3U_LOCAL_DLC=0 leaves it offline;
     // MH3U_LOCAL_DLC=<folder> serves that folder's files as they are (debugging the game's formats).
@@ -533,6 +534,9 @@ int main(int argc, char** argv) {
             }, true);
         }
     }
+    // after the DLC server, whose nn_ac / nn_act answers (127.0.0.1, a fixed account) are for its local login only
+    r.data_dir = paths.data;  // register_online reads mh3u_server.txt from it
+    os::register_online(r);
     // hand-written game code (src/): replacements of recompiled functions listed in config/overrides.txt
     game::register_boot_prompts(settings.skip_boot_notices);
     game::register_filters(settings.bloom, settings.depth_of_field != "off");

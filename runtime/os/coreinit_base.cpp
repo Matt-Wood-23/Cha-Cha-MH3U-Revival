@@ -61,6 +61,10 @@ HLE_FUNC(coreinit, __ghs_ftrylock_file) {
     ret(ctx, 0);
 }
 HLE_FUNC(coreinit, __gh_set_errno) {}
+// FILE* -> where that stream keeps its lock (stdio calls it before locking, e.g. on the NEX login path). Every stream
+// shares the one GHS lock, so one guest slot serves them all; the lock functions above never read it back.
+uint32_t g_flock_slot = 0;
+HLE_FUNC(coreinit, __ghs_flock_ptr) { ret(ctx, g_flock_slot); }
 
 // hardware registers: u16 OSReadRegister16(interface, reg) etc. No hardware behind them: reads give 0 and every
 // access is logged once, so a register the game depends on shows up.
@@ -95,7 +99,8 @@ HLE_FUNC(coreinit, _Exit) { throw GuestExit{static_cast<int>(arg(ctx, 0))}; }
 
 }  // namespace
 
-void register_coreinit_base(Runtime&) {
+void register_coreinit_base(Runtime& r) {
+    g_flock_slot = r.mem->alloc_hle(4, 4);
     HLE_REGISTER(coreinit, OSIsDebuggerInitialized);
     HLE_REGISTER(coreinit, __ghsLock);
     HLE_REGISTER(coreinit, __ghsUnlock);
@@ -129,6 +134,7 @@ void register_coreinit_base(Runtime&) {
     HLE_REGISTER(coreinit, __ghs_flock_file);
     HLE_REGISTER(coreinit, __ghs_funlock_file);
     HLE_REGISTER(coreinit, __ghs_ftrylock_file);
+    HLE_REGISTER(coreinit, __ghs_flock_ptr);
     HLE_REGISTER(coreinit, __gh_set_errno);
     HLE_REGISTER(coreinit, OSReadRegister16);
     HLE_REGISTER(coreinit, OSWriteRegister16);

@@ -89,6 +89,8 @@ void register_input(Runtime& r);
 void register_coreinit_dynload(Runtime& r);
 void register_applets(Runtime& r);
 void register_offline(Runtime& r);
+void register_online(Runtime& r);  // after register_dlc_server: MH3U Revival server when <data>/mh3u_server.txt names one
+void install_crash_report();     // stack overflow, divide, uncaught C++ exception, abort: code + backtrace
 // The DLC server, local (dlc_server.cpp): curl's easy interface answered by responder, nn_ac / nn_act online.
 // Register after register_offline / register_nn_act (it replaces some of their imports).
 struct DlcResponse {
