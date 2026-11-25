@@ -2,6 +2,7 @@
 // Timer: Espresso bus clock 248.625 MHz, timebase = bus / 4 = 62,156,250 ticks/s. OSTime counts from 2000-01-01.
 #include "hle.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <cstring>
@@ -92,22 +93,31 @@ std::string guest_format(const ppc::Context& ctx, uint32_t fmt, int first_gpr) {
         }
         size_t j = i + 1;
         while (j < f.size() && std::strchr("-+ #0123456789.", f[j])) ++j;
-        int longs = 0;
-        while (j < f.size() && (f[j] == 'l' || f[j] == 'h' || f[j] == 'z')) longs += f[j++] == 'l';
+        // flags, width and precision only: the guest's length modifiers are read here and the host's chosen below
+        // (a guest "%lld" passed on as "%ll" + "ll" + "d" is a format the MSVC runtime ends the process over)
+        const std::string spec = f.substr(i, j - i);
+        int longs = 0, shorts = 0;
+        while (j < f.size() && std::strchr("lhzjtL", f[j])) {
+            longs += f[j] == 'l' ? 1 : (f[j] == 'L' || f[j] == 'j') ? 2 : 0;  // ll, L, intmax_t: 64-bit on the console
+            shorts += f[j] == 'h';
+            ++j;
+        }
         if (j >= f.size()) break;
-        std::string spec = f.substr(i, j - i);
         char c = f[j];
         char buf[512];
         buf[0] = 0;
         switch (c) {
             case '%': std::snprintf(buf, sizeof buf, "%%"); break;
             case 'd': case 'i': case 'u': case 'x': case 'X': case 'o': case 'c':
-                if (longs >= 2) {
+                if (longs >= 2 && c != 'c') {
                     if (gpr % 2 == 0) ++gpr;  // 64-bit values use an odd/even register pair
+                    if (gpr > 10) stack = (stack + 7) & ~7u;  // or an 8-aligned stack slot
                     uint64_t hi = next_int(), lo = next_int();
                     std::snprintf(buf, sizeof buf, (spec + "ll" + c).c_str(), (hi << 32) | lo);
-                } else {
-                    std::snprintf(buf, sizeof buf, (spec + c).c_str(), next_int());
+                } else if (c == 'c') {
+                    std::snprintf(buf, sizeof buf, (spec + c).c_str(), static_cast<int>(next_int() & 0xFF));
+                } else {  // int, long, size_t: 32-bit on the console; h and hh as written
+                    std::snprintf(buf, sizeof buf, (spec + std::string(std::min(shorts, 2), 'h') + c).c_str(), next_int());
                 }
                 break;
             case 'p': std::snprintf(buf, sizeof buf, "0x%08X", next_int()); break;
