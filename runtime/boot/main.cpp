@@ -21,6 +21,8 @@
 #include "play_log.h"
 #include "windpress.h"
 #include "grab_escape.h"
+#include "hammer_spin.h"
+#include "lance_charge.h"
 #include "frame_limit.h"
 #include "monster_hp.h"
 #include "carving.h"
@@ -543,6 +545,8 @@ int main(int argc, char** argv) {
     game::set_modern_camera_mouse({&input::take_look, &input::set_direct_look});  // the Modern Camera mod's mouse
     game::register_windpress();     // the windpress push by the frame time, not per frame
     game::register_grab_escape();   // each wiggle out of a grab counts as on the console
+    game::register_hammer_spin();   // the hammer spin's golf-swing gate counts loops, not the frame time
+    game::register_lance_charge();  // the lance charge drains stamina by the frame time, not per frame
     // MH3U_PLAY_LOG: per-frame hunter / marker log (frame-rate bugs); MH3U_PLAY_WATCH=1 adds who writes the position
     std::function<void(uint32_t)> play_watch;
     if (char* w = nullptr; _dupenv_s(&w, &frames_len, "MH3U_PLAY_WATCH") == 0 && w) {
